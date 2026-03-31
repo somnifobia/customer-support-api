@@ -1,7 +1,7 @@
 opencollection: 1.0.0
 
 info:
-  name: customer-support-api copy
+  name: customer-support-api
 config:
   proxy:
     inherit: true

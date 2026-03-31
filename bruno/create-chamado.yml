@@ -6,6 +6,17 @@ info:
 http:
   method: POST
   url: http://localhost:8080/chamados
+  body:
+    type: json
+    data: |-
+      {
+        "titulo": "Erro ao acessar sistema",
+        "descricao": "O cliente não consegue fazer login.",
+        "status": "ABERTO",
+        "cliente": {
+          "id": 1
+        }
+      }
   auth: inherit
 
 settings:
