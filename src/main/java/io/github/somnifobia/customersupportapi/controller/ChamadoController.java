@@ -1,8 +1,10 @@
 package io.github.somnifobia.customersupportapi.controller;
 
+import io.github.somnifobia.customersupportapi.dto.ChamadoRequestDTO;
+import io.github.somnifobia.customersupportapi.dto.ChamadoResponseDTO;
 import io.github.somnifobia.customersupportapi.enums.StatusChamado;
-import io.github.somnifobia.customersupportapi.model.Chamado;
 import io.github.somnifobia.customersupportapi.service.ChamadoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,20 +22,19 @@ public class ChamadoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Chamado criar(@RequestBody Chamado chamado) {
-        return chamadoService.salvar(chamado);
+    public ChamadoResponseDTO criar(@RequestBody @Valid ChamadoRequestDTO dto) {
+        return chamadoService.salvar(dto);
     }
 
     @GetMapping
-    public List<Chamado> listar(
+    public List<ChamadoResponseDTO> listar(
             @RequestParam(required = false) StatusChamado status,
-            @RequestParam(required = false) Long clienteId
-    )   {
+            @RequestParam(required = false) Long clienteId) {
         return chamadoService.listar(status, clienteId);
     }
 
     @GetMapping("/{id}")
-    public Chamado buscarPorId(@PathVariable Long id) {
+    public ChamadoResponseDTO buscarPorId(@PathVariable Long id) {
         return chamadoService.buscarPorId(id);
     }
 }

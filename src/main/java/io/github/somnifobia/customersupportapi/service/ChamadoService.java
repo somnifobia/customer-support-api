@@ -1,5 +1,7 @@
 package io.github.somnifobia.customersupportapi.service;
 
+import io.github.somnifobia.customersupportapi.dto.ChamadoRequestDTO;
+import io.github.somnifobia.customersupportapi.dto.ChamadoResponseDTO;
 import io.github.somnifobia.customersupportapi.enums.StatusChamado;
 import io.github.somnifobia.customersupportapi.model.Chamado;
 import io.github.somnifobia.customersupportapi.model.Cliente;
@@ -7,6 +9,7 @@ import io.github.somnifobia.customersupportapi.repository.ChamadoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChamadoService {
@@ -19,28 +22,37 @@ public class ChamadoService {
         this.clienteService = clienteService;
     }
 
-    public Chamado salvar(Chamado chamado) {
-        Long clientId = chamado.getCliente().getId();
-        Cliente cliente = clienteService.buscarPorId(clientId);
+    public ChamadoResponseDTO salvar(ChamadoRequestDTO dto) {
+        Cliente cliente = clienteService.buscarEntidadePorId(dto.getClienteId());
+        Chamado chamado = new Chamado();
+        chamado.setTitulo(dto.getTitulo());
+        chamado.setDescricao(dto.getDescricao());
+        chamado.setStatus(dto.getStatus() != null ? dto.getStatus() : StatusChamado.ABERTO);
         chamado.setCliente(cliente);
-        return chamadoRepository.save(chamado);
+        return toDTO(chamadoRepository.save(chamado));
     }
 
-    public List<Chamado> listar(StatusChamado status, Long clienteId) {
+    public List<ChamadoResponseDTO> listar(StatusChamado status, Long clienteId) {
+        List<Chamado> chamados;
         if (status != null && clienteId != null) {
-            return chamadoRepository.findByStatusAndClienteId(status, clienteId);
+            chamados = chamadoRepository.findByStatusAndClienteId(status, clienteId);
+        } else if (status != null) {
+            chamados = chamadoRepository.findByStatus(status);
+        } else if (clienteId != null) {
+            chamados = chamadoRepository.findByClienteId(clienteId);
+        } else {
+            chamados = chamadoRepository.findAll();
         }
-        if (status != null) {
-            return chamadoRepository.findByStatus(status);
-        }
-        if (clienteId != null) {
-            return chamadoRepository.findByClienteId(clienteId);
-        }
-        return chamadoRepository.findAll();
+        return chamados.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public Chamado buscarPorId(Long id) {
-        return chamadoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Chamado não encontrado com id: " + id));
+    public ChamadoResponseDTO buscarPorId(Long id) {
+        return toDTO(chamadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chamado não encontrado com id: " + id)));
+    }
+
+    private ChamadoResponseDTO toDTO(Chamado c) {
+        return new ChamadoResponseDTO(c.getId(), c.getTitulo(), c.getDescricao(), c.getStatus(), c.getDataAbertura(),
+                c.getCliente().getId(), c.getCliente().getNome());
     }
 }
