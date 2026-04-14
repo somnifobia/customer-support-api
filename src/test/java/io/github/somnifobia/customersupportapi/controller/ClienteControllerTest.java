@@ -1,21 +1,25 @@
 package io.github.somnifobia.customersupportapi.controller;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.github.somnifobia.customersupportapi.dto.ClienteRequestDTO;
 import io.github.somnifobia.customersupportapi.dto.ClienteResponseDTO;
 import io.github.somnifobia.customersupportapi.service.ClienteService;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ClienteController.class)
 class ClienteControllerTest {
@@ -26,8 +30,7 @@ class ClienteControllerTest {
     @MockitoBean
     private ClienteService clienteService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void deveCriarClienteComSucesso() throws Exception {
@@ -35,9 +38,11 @@ class ClienteControllerTest {
         request.setNome("Vinicius");
         request.setEmail("vinicius@email.com");
 
-        ClienteResponseDTO response = new ClienteResponseDTO(1L, "Vinicius", "vinicius@email.com", null);
+        ClienteResponseDTO response = new ClienteResponseDTO(
+                1L, "Vinicius", "vinicius@email.com", null
+        );
 
-        Mockito.when(clienteService.salvar(Mockito.any())).thenReturn(response);
+        when(clienteService.salvar(any())).thenReturn(response);
 
         mockMvc.perform(post("/clientes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,8 +66,10 @@ class ClienteControllerTest {
 
     @Test
     void deveListarClientes() throws Exception {
-        Mockito.when(clienteService.listarTodos())
-                .thenReturn(List.of(new ClienteResponseDTO(1L, "Vinicius", "v@email.com", null)));
+        when(clienteService.listarTodos())
+                .thenReturn(List.of(
+                        new ClienteResponseDTO(1L, "Vinicius", "v@email.com", null)
+                ));
 
         mockMvc.perform(get("/clientes"))
                 .andExpect(status().isOk())

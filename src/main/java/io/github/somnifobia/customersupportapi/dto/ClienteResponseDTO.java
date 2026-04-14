@@ -1,7 +1,7 @@
 package io.github.somnifobia.customersupportapi.dto;
 
 public class ClienteResponseDTO {
-    
+
     private Long id;
     private String nome;
     private String email;
@@ -14,8 +14,19 @@ public class ClienteResponseDTO {
         this.telefone = telefone;
     }
 
-    public Long getId() { return id; }
-    public String getNome() { return nome; }
-    public String getEmail() { return email; }
-    public String getTelefone() { return telefone; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
 }
